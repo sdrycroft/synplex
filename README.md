@@ -33,9 +33,9 @@ List accounts:
 Synchronise accounts:
   -a ID [ID ...], --accounts ID [ID ...]
                          IDs of the accounts to sync.
-  -s, --single-run
+  -s, --single-run       Whether the application should exit after the first run, or run continuously.
   -w SECONDS, --wait SECONDS
-                         Time to wait in seconds between each synchronisation.
+                         Time to wait in seconds between each synchronisation. Defaults to 300 seconds.
 ```
 
 ### List the accounts
