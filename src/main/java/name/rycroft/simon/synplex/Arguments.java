@@ -61,6 +61,7 @@ public class Arguments {
                 .dest(ACCOUNTS);
 
         synchroniseAccountsGroup.addArgument("-s", "--single-run")
+                .help("Whether the application should exit after the first run, or run continuously.")
                 .dest(SINGLE_RUN)
                 .action(storeTrue());
 

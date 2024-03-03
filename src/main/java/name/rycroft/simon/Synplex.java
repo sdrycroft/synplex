@@ -33,8 +33,7 @@ public class Synplex {
                 do {
                     SyncViews syncViews = injector.getInstance(SyncViews.class);
                     arguments.accounts().forEach(syncViews::sync);
-                    sleep(Duration.ofSeconds(arguments.waitTimeInSeconds()));
-                } while (!arguments.singleRun());
+                } while (!arguments.singleRun() && sleepBetweenRuns(arguments));
             }
         } catch (HelpScreenException ignored) {
         } catch (ArgumentParserException ignored) {
@@ -46,5 +45,10 @@ public class Synplex {
             logger.error(e.getMessage());
             logger.error("Interrupted exception.");
         }
+    }
+
+    private static boolean sleepBetweenRuns(Arguments arguments) throws ArgumentParserException, InterruptedException {
+        sleep(Duration.ofSeconds(arguments.waitTimeInSeconds()));
+        return true;
     }
 }

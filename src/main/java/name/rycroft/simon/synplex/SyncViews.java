@@ -89,6 +89,26 @@ public class SyncViews {
                 WHERE account_id = ?
             );
             """;
+    private static final String UPDATE_METADATA_ITEM_SETTINGS = """
+            WITH up AS (
+                SELECT lft.* FROM metadata_item_settings lft
+                INNER JOIN metadata_item_settings rgt ON lft.guid = rgt.guid AND lft.account_id = ? AND rgt.account_id = ?
+                WHERE lft.updated_at > rgt.updated_at
+            )
+            UPDATE metadata_item_settings SET
+                rating = (SELECT rating FROM up WHERE guid = metadata_item_settings.guid),
+                view_offset = (SELECT view_offset FROM up WHERE guid = metadata_item_settings.guid),
+                last_viewed_at  = (SELECT last_viewed_at FROM up WHERE guid = metadata_item_settings.guid),
+                created_at = (SELECT created_at FROM up WHERE guid = metadata_item_settings.guid),
+                updated_at = (SELECT updated_at FROM up WHERE guid = metadata_item_settings.guid),
+                skip_count = (SELECT skip_count FROM up WHERE guid = metadata_item_settings.guid),
+                last_skipped_at = (SELECT last_skipped_at FROM up WHERE guid = metadata_item_settings.guid),
+                changed_at = (SELECT changed_at FROM up WHERE guid = metadata_item_settings.guid),
+                extra_data = (SELECT extra_data FROM up WHERE guid = metadata_item_settings.guid),
+                last_rated_at = (SELECT last_rated_at FROM up WHERE guid = metadata_item_settings.guid)
+            WHERE guid IN (SELECT guid FROM up)
+              AND account_id = ?
+            """;
     private static final String UPDATE_METADATA_ITEM_SETTINGS_VIEW_COUNT = """
             UPDATE metadata_item_settings
             SET view_count = (
@@ -96,7 +116,12 @@ public class SyncViews {
                 WHERE metadata_item_settings.guid = metadata_item_views.guid
                 AND metadata_item_settings.account_id = metadata_item_views.account_id
             )
-            WHERE account_id = ?;
+            WHERE account_id = ?
+              AND view_count < (
+                SELECT COUNT(*) FROM metadata_item_views
+                WHERE metadata_item_settings.guid = metadata_item_views.guid
+                AND metadata_item_settings.account_id = metadata_item_views.account_id
+            )
             """;
     private final Database database;
 
@@ -107,12 +132,15 @@ public class SyncViews {
 
     public void sync(long id) {
         try {
-            logger.info("Syncing views.");
+            logger.info("Inserting views.");
             database.update(INSERT_INTO_METADATA_ITEM_VIEWS, id, 1, id);
             database.update(INSERT_INTO_METADATA_ITEM_VIEWS, 1, id, 1);
-            logger.info("Syncing settings.");
+            logger.info("Inserting settings.");
             database.update(INSERT_INTO_METADATA_ITEM_SETTINGS, id, 1, id);
             database.update(INSERT_INTO_METADATA_ITEM_SETTINGS, 1, id, 1);
+            logger.info("Updating settings.");
+            database.update(UPDATE_METADATA_ITEM_SETTINGS, 1, id, id);
+            database.update(UPDATE_METADATA_ITEM_SETTINGS, id, id, 1);
             logger.info("Syncing view counts.");
             database.update(UPDATE_METADATA_ITEM_SETTINGS_VIEW_COUNT, id);
             database.update(UPDATE_METADATA_ITEM_SETTINGS_VIEW_COUNT, 1);
