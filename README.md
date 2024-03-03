@@ -11,7 +11,7 @@ located at the expected default location.
 ### Help
 
 ```bash
-$ java -jar ~/bin/synplex-1.0.0.jar -h
+$ java -jar ~/bin/synplex.jar -h
 usage: Synplex [-h] [-d PATH] [-l] [-a ID [ID ...]] [-s] [-w SECONDS]
 
 Synchronise Plex viewing.
@@ -43,7 +43,7 @@ Synchronise accounts:
 Useful for finding the IDs for the main sync process.
 
 ```bash
-$ java -jar ~/bin/synplex-1.0.0.jar -l
+$ java -jar ~/bin/synplex.jar -l
 Accounts
            sdrycroft :            1
             monkey99 :     12345678
@@ -57,5 +57,5 @@ two listed accounts. Effectively all three accounts will have exactly the same
 stats.
 
 ```bash
-$ java -jar ~/bin/synplex-1.0.0.jar -a 12345678 12345679 -w 900
+$ java -jar ~/bin/synplex.jar -a 12345678 12345679 -w 900
 ```
