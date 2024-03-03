@@ -53,7 +53,7 @@ public class Arguments {
         ArgumentGroup synchroniseAccountsGroup = argumentParser.addArgumentGroup("Synchronise accounts");
 
         synchroniseAccountsGroup.addArgument("-a", "--accounts")
-                .help("List of accounts to sync - no need to include '1', that assumed.")
+                .help("List of accounts to sync with the main admin account.")
                 .metavar("ID")
                 .type(Long.class)
                 .nargs("+")
@@ -87,7 +87,11 @@ public class Arguments {
     }
 
     public List<Long> accounts() throws ArgumentParserException {
-        return argumentParser.parseArgs(args).getList(ACCOUNTS);
+        List<Long> accounts = argumentParser.parseArgs(args).getList(ACCOUNTS);
+        if (accounts.contains(1L)) {
+            throw new RuntimeException("1 is not a supported account ID and should not be included in the list of accounts to sync.");
+        }
+        return accounts;
     }
 
     public boolean singleRun() throws ArgumentParserException {

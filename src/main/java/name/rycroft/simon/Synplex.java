@@ -36,6 +36,8 @@ public class Synplex {
                 } while (!arguments.singleRun() && sleepBetweenRuns(arguments));
             }
         } catch (HelpScreenException ignored) {
+        } catch (RuntimeException exception) {
+            logger.error(exception.getMessage());
         } catch (ArgumentParserException ignored) {
             logger.error("Invalid arguments supplied.");
         } catch (SQLException e) {
