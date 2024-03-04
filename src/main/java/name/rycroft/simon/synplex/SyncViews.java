@@ -109,20 +109,6 @@ public class SyncViews {
             WHERE guid IN (SELECT guid FROM up)
               AND account_id = ?
             """;
-    private static final String UPDATE_METADATA_ITEM_SETTINGS_VIEW_COUNT = """
-            UPDATE metadata_item_settings
-            SET view_count = (
-                SELECT COUNT(*) FROM metadata_item_views
-                WHERE metadata_item_settings.guid = metadata_item_views.guid
-                AND metadata_item_settings.account_id = metadata_item_views.account_id
-            )
-            WHERE account_id = ?
-              AND view_count < (
-                SELECT COUNT(*) FROM metadata_item_views
-                WHERE metadata_item_settings.guid = metadata_item_views.guid
-                AND metadata_item_settings.account_id = metadata_item_views.account_id
-            )
-            """;
     private final Database database;
 
     @Inject
@@ -141,9 +127,6 @@ public class SyncViews {
             logger.info("Updating settings.");
             database.update(UPDATE_METADATA_ITEM_SETTINGS, 1, id, id);
             database.update(UPDATE_METADATA_ITEM_SETTINGS, id, id, 1);
-            logger.info("Syncing view counts.");
-            database.update(UPDATE_METADATA_ITEM_SETTINGS_VIEW_COUNT, id);
-            database.update(UPDATE_METADATA_ITEM_SETTINGS_VIEW_COUNT, 1);
         } catch (SQLException ignored) {
         }
     }
