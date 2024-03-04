@@ -105,7 +105,8 @@ public class SyncViews {
                 last_skipped_at = (SELECT last_skipped_at FROM up WHERE guid = metadata_item_settings.guid),
                 changed_at = (SELECT changed_at FROM up WHERE guid = metadata_item_settings.guid),
                 extra_data = (SELECT extra_data FROM up WHERE guid = metadata_item_settings.guid),
-                last_rated_at = (SELECT last_rated_at FROM up WHERE guid = metadata_item_settings.guid)
+                last_rated_at = (SELECT last_rated_at FROM up WHERE guid = metadata_item_settings.guid),
+                view_count = (SELECT view_count FROM up WHERE guid = metadata_item_settings.guid)
             WHERE guid IN (SELECT guid FROM up)
               AND account_id = ?
             """;
